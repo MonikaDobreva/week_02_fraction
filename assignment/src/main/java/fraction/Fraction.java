@@ -31,6 +31,11 @@ public class Fraction implements Comparable<Fraction> {
             throw new IllegalArgumentException("The denominator cannot be equal to zero!");
         }
 
+        if (denominator < 0) {
+            numerator = numerator*(-1);
+            denominator = denominator*(-1);
+        }
+
         int gcd = gcd(numerator, denominator);
         this.numerator = numerator / gcd;
         this.denominator = denominator / gcd;
