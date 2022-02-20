@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assumptions.assumeThat;
 import org.assertj.core.api.SoftAssertions;
+import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -77,8 +78,16 @@ public class FractionTest {
      * 
      */
     final Map<String, BiFunction<Fraction, Fraction, Fraction>> operations = Map.of(
-            "times", ( f1, f2 ) -> f1.times( f2 ) // on value given
-            //TODO add more named lamddas to the map
+            "times", Fraction::times, // on value given
+            "plus", Fraction::plus,
+            "minus", Fraction::minus,
+            "divideBy", Fraction::divideBy,
+            "inverse", ( f1, f2 ) -> f1.inverse(),
+            "negate", (f1, f2) -> f1.negate(),
+            "timesInt", (f1, f2) -> f1.times(f2.getNumerator()),
+            "plusInt", (f1, f2) -> f1.plus(f2.getNumerator()),
+            "minusInt", (f1, f2) -> f1.minus(f2.getNumerator()),
+            "divideByInt", (f1, f2) -> f1.divideBy(f2.getNumerator())
     
     );
 
@@ -95,7 +104,15 @@ public class FractionTest {
              {
                 // msg, opname, expected, a,b,c,d
                 "'one half times one third is 1 sixth','times',   '(1/6)',   1,2,1,3",
-                 } )
+                     "'one thirds plus two thirds is 1'    , 'plus',       '1',   1,3,2,3",
+                     "'inverse fraction '                  , 'inverse',    '3',   1,3,1,3",
+                     "'one half minus two thirds is'       , 'minus' , '-(1/6)',  1,2,2,3",
+                     "'one half times 4 is 2'              , 'timesInt','2',      1,2,4,1",
+                     "'one half plus  1 is 1(1/2)'         , 'plusInt','(1+(1/2))',  1,2,1,1",
+                     "'5 thirds minus 2 is -1/3  '         , 'minusInt','-(1/3)', 5,3,2,1",
+                     "'5 thirds divided by 4 is  '         , 'divideByInt','(5/12)', 15,9,4,1",
+                     "'1/2 div 1/3     is 1+1/2  '         , 'divideBy','(1+(1/2))', 1,2,3,9",
+                     "'negate 1/5                '         , 'negate','-(1/5)', 1,5,1,5", } )
     void t3FractionOps( String message, String operation, String expected, int a,
                        int b, int c, int d ) {
         BiFunction<Fraction, Fraction, Fraction> op = operations.get( operation );
@@ -108,7 +125,7 @@ public class FractionTest {
         SoftAssertions.assertSoftly(softly -> {
             assumeThat(result.toString()).as(message).isEqualTo(expected);
         });
-        //fail( "tFractionOps completed succesfully; you know what to do" );
+        //fail( "tFractionOps completed successfully; you know what to do" );
     }
 
     /**
@@ -119,8 +136,18 @@ public class FractionTest {
     //@Disabled("Think TDD")
     @Test
     void t4DivideByZeroNotAllowed() {
-        //TODO 
-        fail( "tDivideByZeroNotAllowed completed succesfully; you know what to do" );
+        ThrowableAssert.ThrowingCallable code = () -> {
+            int n1 = 1;
+            int d1 = 1;
+            int n2 = 0;
+            int d2 = 0;
+            Fraction fraction1 = new Fraction(n1, d1);
+            Fraction fraction2 = new Fraction(n2, d2);
+            fraction1.divideBy(fraction2);
+        };
+        assertThatCode(code).as("Division by zero not possible!")
+                .isExactlyInstanceOf(IllegalArgumentException.class);
+        //fail( "tDivideByZeroNotAllowed completed successfully; you know what to do" );
     }
 
     /**
@@ -131,8 +158,9 @@ public class FractionTest {
     //@Disabled("Think TDD")
     @Test
     public void t5IntAsFrac() {
-        //TODO test frac(int) and indirectly new Fraction(int).
-        fail( "tIntAsFrac completed succesfully; you know what to do" );
+        Fraction fraction = new Fraction(2);
+        assertThat(fraction).isExactlyInstanceOf(Fraction.class);
+        //fail( "tIntAsFrac completed succesfully; you know what to do" );
     }
 
     /**
@@ -145,8 +173,18 @@ public class FractionTest {
     //@Disabled("Think TDD")
     @Test
     public void t7EqualsHashCode() {
-        //TODO create enough fraction objects to invoke helper method verifyEqualsAndHashCode
-        fail( "tEqualsHasCode completed succesfully; you know what to do" );
+        Fraction fraction1 = new Fraction(2, 3);
+        Fraction fraction2 = new Fraction(2, 3);
+        Fraction fraction3 = new Fraction(2, 4);
+        SoftAssertions.assertSoftly(s -> {
+            assertThat(fraction1.equals(fraction2)).isTrue();
+            assertThat(fraction1.equals(fraction3)).isFalse();
+            assertThat(fraction1).isInstanceOf(Fraction.class);
+            assertThat(fraction1.equals(1)).isFalse();
+            assertThat(fraction1.hashCode()).isEqualTo(fraction2.hashCode());
+            assertThat(fraction1.hashCode()).isNotEqualTo(fraction3.hashCode());
+        });
+        //fail( "tEqualsHasCode completed succesfully; you know what to do" );
     }
 
     /**
@@ -168,8 +206,10 @@ public class FractionTest {
         "less,    1,2,3,4,-1",
         "greater, 1,2,1,3,1", } )
     public void t8Comparable( String msg, int a, int b, int c, int d, int signum ) {
-        //TODO create fractions and test compareTo
-        fail( "tComparable completed succesfully; you know what to do" );
+        Fraction fraction1 = new Fraction(a, b);
+        Fraction fraction2 = new Fraction(c, d);
+        assertThat(fraction1.compareTo(fraction2)).as(msg).isEqualTo(signum);
+        //fail( "tComparable completed successfully; you know what to do" );
     }
 
     /**

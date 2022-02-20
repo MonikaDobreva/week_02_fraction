@@ -35,6 +35,10 @@ public class Fraction implements Comparable<Fraction> {
         this.numerator = numerator / gcd;
         this.denominator = denominator / gcd;
     }
+
+    public Fraction(int numerator) {
+        this(numerator, 1);
+    }
     
     /**
      * Compute Greatest Common Divisor. Used to normalize fractions.
@@ -87,13 +91,59 @@ public class Fraction implements Comparable<Fraction> {
     public Fraction times(int otherN, int otherD){
         int numerator = this.numerator * otherN;
         int denominator = this.denominator * otherD;
+
         return new Fraction(numerator, denominator);
+    }
+
+    public Fraction times(int numerator){
+        return this.times(new Fraction(numerator));
+    }
+
+    public Fraction plus(int otherN, int otherD) {
+        int newNumerator = (this.numerator * otherD) + (this.denominator * otherN);
+        int newDenominator = (this.denominator * otherD);
+
+        return new Fraction(newNumerator, newDenominator);
+    }
+
+    public Fraction plus(Fraction other) {
+        return this.plus(other.getNumerator(), other.getDenominator());
+    }
+
+    public Fraction plus(int numerator) {
+        Fraction frac = new Fraction(numerator);
+        return this.plus(frac);
+    }
+
+    public Fraction minus(Fraction other) {
+        return this.plus((-1)*other.getNumerator(), other.getDenominator());
+    }
+
+    public Fraction minus(int numerator) {
+        return this.minus(new Fraction(numerator));
+    }
+
+    public Fraction divideBy(Fraction other){
+        return this.times(other.getDenominator(), other.getNumerator());
+    }
+
+    public Fraction divideBy(int numerator) {
+        return this.divideBy(new Fraction(numerator));
+    }
+
+    public Fraction inverse() {
+        return new Fraction(this.denominator, this.numerator);
+    }
+
+    public Fraction negate() {
+        return new Fraction((-1)*this.numerator, this.denominator);
     }
 
     @Override
     public int compareTo(Fraction frac) {
         float first = (float) this.numerator / this.denominator;
         float second = (float) frac.getNumerator() / frac.getDenominator();
+
         if (first == second) {
             return 0;
         } else if (first > second) {
@@ -108,6 +158,7 @@ public class Fraction implements Comparable<Fraction> {
         if (this.denominator == 1) {
             return this.numerator + "";
         }
+
         int result = this.numerator / this.denominator;
 
         if (Math.abs(this.numerator) > Math.abs(this.denominator)) {
@@ -147,8 +198,5 @@ public class Fraction implements Comparable<Fraction> {
     public int hashCode() {
         return Objects.hash(numerator, denominator);
     }
-
-
-    
 }
 
