@@ -1,5 +1,7 @@
 package fraction;
 
+import java.util.Objects;
+
 /**
  * Immutable Fraction : numerator/denominator.
  *
@@ -11,10 +13,11 @@ package fraction;
  *
  * @author Pieter van den Hombergh
  */
-//TODO Declare fraction To be Comparable.
-public class Fraction {
 
-    //TODO implement all fields
+public class Fraction implements Comparable<Fraction> {
+
+    private final int numerator;
+    private final int denominator;
     
     
     /**
@@ -24,8 +27,13 @@ public class Fraction {
      * @param denominator denominator
      */
     public Fraction( int numerator, int denominator ) {
-        //TODO implement constructor
-        
+        if (denominator == 0) {
+            throw new IllegalArgumentException("The denominator cannot be equal to zero!");
+        }
+
+        int gcd = gcd(numerator, denominator);
+        this.numerator = numerator / gcd;
+        this.denominator = denominator / gcd;
     }
     
     /**
@@ -48,15 +56,13 @@ public class Fraction {
         return a;
     }
 
-
     /**
      * Get numerator.
      *
      * @return the numerator.
      */
     int getNumerator() {
-        //TODO implement getNumerator
-        return 1;
+        return this.numerator;
     }
 
     /**
@@ -65,10 +71,9 @@ public class Fraction {
      * @return the denominator.
      */
     int getDenominator() {
-        //TODO implement getDenominator
-        return 1;
+        return this.denominator;
     }
-    
+
     /**
      * Multiply with Fraction.
      *
@@ -76,11 +81,74 @@ public class Fraction {
      * @return new Multiplied Fraction
      */
     public Fraction times( Fraction other ) {
-        //TODO implement times
-        return new Fraction( 1, 1 );
+        return times(other.getNumerator(), other.getDenominator());
     }
-    
-    //TODO implement all features of part 1,2,3
+
+    public Fraction times(int otherN, int otherD){
+        int numerator = this.numerator * otherN;
+        int denominator = this.denominator * otherD;
+        return new Fraction(numerator, denominator);
+    }
+
+    @Override
+    public int compareTo(Fraction frac) {
+        float first = (float) this.numerator / this.denominator;
+        float second = (float) frac.getNumerator() / frac.getDenominator();
+        if (first == second) {
+            return 0;
+        } else if (first > second) {
+            return 1;
+        } else {
+            return -1;
+        }
+    }
+
+    @Override
+    public String toString() {
+        if (this.denominator == 1) {
+            return this.numerator + "";
+        }
+        int result = this.numerator / this.denominator;
+
+        if (Math.abs(this.numerator) > Math.abs(this.denominator)) {
+            if(this.numerator < 0 && this.denominator > 0){
+                return "-(" + Math.abs(result) + "+(" + Math.abs(this.numerator % this.denominator) + "/" + Math.abs(this.denominator) + "))";
+            }
+            if(this.numerator < 0 && this.denominator < 0){
+                return "(" + Math.abs(result) + "+(" + Math.abs(this.numerator % this.denominator) + "/" + Math.abs(this.denominator) + "))";
+            }
+            if(this.numerator > 0 && this.denominator < 0){
+                return "-(" + Math.abs(result) + "+(" + Math.abs(this.numerator % this.denominator) + "/" + Math.abs(this.denominator) + "))";
+            }
+            return "(" + result + "+(" + this.numerator % this.denominator + "/" + this.denominator + "))";
+        }
+        if (this.numerator < 0 && this.denominator < 0){
+            return "(" + Math.abs(this.numerator) + "/" + Math.abs(this.denominator) + ")";
+        }
+        if (this.numerator < 0 && this.denominator > 0){
+            return "-(" + Math.abs(this.numerator) + "/" + Math.abs(this.denominator) + ")";
+        }
+        if (this.numerator > 0 && this.denominator < 0){
+            return "-(" + Math.abs(this.numerator) + "/" + Math.abs(this.denominator) + ")";
+        }
+
+        return "(" + this.numerator + "/" + this.denominator + ")";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Fraction fraction = (Fraction) o;
+        return numerator == fraction.numerator && denominator == fraction.denominator;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(numerator, denominator);
+    }
+
+
     
 }
 
