@@ -178,15 +178,15 @@ public class Fraction implements Comparable<Fraction> {
             }
             return "(" + result + "+(" + this.numerator % this.denominator + "/" + this.denominator + "))";
         }
-        if (this.numerator < 0 && this.denominator < 0){
+        /*if (this.numerator < 0 && this.denominator < 0){
             return "(" + Math.abs(this.numerator) + "/" + Math.abs(this.denominator) + ")";
-        }
+        }*/
         if (this.numerator < 0 && this.denominator > 0){
             return "-(" + Math.abs(this.numerator) + "/" + Math.abs(this.denominator) + ")";
         }
-        if (this.numerator > 0 && this.denominator < 0){
+        /*if (this.numerator > 0 && this.denominator < 0){
             return "-(" + Math.abs(this.numerator) + "/" + Math.abs(this.denominator) + ")";
-        }
+        }*/
 
         return "(" + this.numerator + "/" + this.denominator + ")";
     }
